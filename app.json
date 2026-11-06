@@ -1,7 +1,7 @@
 {
-  "name": "Luna The Chat Bot",
+  "name": "Minnak The Chat Bot",
   "description": "Just another Telegram AI chat bot written in Python using Pyrogram.",
-  "repository": "https://github.com/TheHamkerCat/LunaChatBot",
+  "repository": "https://github.com/Hunlar/Avrad",
   "keywords" : [
     "python",
     "ai-bot",
