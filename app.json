@@ -10,7 +10,7 @@
     "pyrogram",
     "arq"
   ],
-  "stack": "heroku-20",
+  "stack": "heroku-24",
   "env": {
     "bot_token": {
            "description": "Your Bot's Api Token ,Get it from @BotFather",
