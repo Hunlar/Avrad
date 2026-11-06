@@ -27,13 +27,13 @@ arq = None
 async def lunaQuery(query: str, user_id: int):
     query = (
         query
-        if LANGUAGE == "en"
+        if LANGUAGE == "tr"
         else (await arq.translate(query, "en")).result.translatedText
     )
     resp = (await arq.luna(query, user_id)).result
     return (
         resp
-        if LANGUAGE == "en"
+        if LANGUAGE == "tr"
         else (
             await arq.translate(resp, LANGUAGE)
         ).result.translatedText
@@ -53,8 +53,8 @@ async def type_and_send(message):
 @luna.on_message(filters.command("repo") & ~filters.edited)
 async def repo(_, message):
     await message.reply_text(
-        "[GitHub](https://github.com/thehamkercat/LunaChatBot)"
-        + " | [Group](t.me/PatheticProgrammers)",
+        "[Emekli](https://t.me/emeklisanalci)"
+        + " | [Group](t.me/ozturkordusu)",
         disable_web_page_preview=True,
     )
 
