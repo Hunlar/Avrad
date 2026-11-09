@@ -84,7 +84,7 @@ async def type_and_send(message):
     await message._client.send_chat_action(chat_id, "cancel")
 
 
-@luna.on_message(filters.command("repo") & ~filters.edited)
+@luna.on_message(filters.command("repo"))
 async def repo(_, message):
     await message.reply_text(
         "[Emekli](https://t.me/emeklisanalci)"
@@ -93,7 +93,7 @@ async def repo(_, message):
     )
 
 
-@luna.on_message(filters.command("help") & ~filters.edited)
+@luna.on_message(filters.command("help"))
 async def start(_, message):
     await luna.send_chat_action(message.chat.id, "typing")
     await sleep(2)
@@ -103,15 +103,13 @@ async def start(_, message):
 @luna.on_message(
     ~filters.private
     & filters.text
-    & ~filters.command("help")
-    & ~filters.edited,
+    & ~filters.command("help"),
     group=69,
 )
 async def chat(_, message):
     if not message.text:
         return
 
-    # Botun kendi mesajına yanıt verilmişse cevap ver.
     if message.reply_to_message:
         replied = message.reply_to_message
 
@@ -119,7 +117,6 @@ async def chat(_, message):
             await type_and_send(message)
             return
 
-    # Belirlenen kelimelerden biri geçiyorsa cevap ver.
     text = message.text.casefold()
 
     if any(keyword in text for keyword in KEYWORDS):
@@ -127,7 +124,7 @@ async def chat(_, message):
 
 
 @luna.on_message(
-    filters.private & ~filters.command("help") & ~filters.edited
+    filters.private & ~filters.command("help")
 )
 async def chatpm(_, message):
     if not message.text:
