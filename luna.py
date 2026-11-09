@@ -1,5 +1,4 @@
 
-import re
 import os
 from asyncio import gather, sleep
 
@@ -32,6 +31,9 @@ KEYWORDS = [
     "sikes",
     "emre",
     "can",
+    "atilla",
+    "q7",
+    "qua",
 ]
 
 NAME_QUESTIONS = [
@@ -63,7 +65,6 @@ async def lunaQuery(query: str, user_id: int):
 
 
 async def type_and_send(message):
-    chat_id = message.chat.id
     user_id = message.from_user.id if message.from_user else 0
     query = message.text.strip()
 
@@ -73,29 +74,24 @@ async def type_and_send(message):
         await message.reply_text("Ben Minnak! 🐾")
         return
 
-    await message._client.send_chat_action(chat_id, "typing")
-
     response, _ = await gather(
         lunaQuery(query, user_id),
         sleep(2)
     )
 
     await message.reply_text(response)
-    await message._client.send_chat_action(chat_id, "cancel")
 
 
 @luna.on_message(filters.command("repo"))
 async def repo(_, message):
     await message.reply_text(
         "[Emekli](https://t.me/emeklisanalci)"
-        + " | [Group](t.me/ozturkordusu)",
-        disable_web_page_preview=True,
+        + " | [Group](https://t.me/ozturkordusu)"
     )
 
 
 @luna.on_message(filters.command("help"))
 async def start(_, message):
-    await luna.send_chat_action(message.chat.id, "typing")
     await sleep(2)
     await message.reply_text("/repo - Get Repo Link")
 
@@ -110,6 +106,7 @@ async def chat(_, message):
     if not message.text:
         return
 
+    # Botun kendi mesajına yanıt verilirse cevap ver.
     if message.reply_to_message:
         replied = message.reply_to_message
 
@@ -117,6 +114,7 @@ async def chat(_, message):
             await type_and_send(message)
             return
 
+    # Belirlenen kelimelerden biri geçerse cevap ver.
     text = message.text.casefold()
 
     if any(keyword in text for keyword in KEYWORDS):
