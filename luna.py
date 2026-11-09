@@ -1,5 +1,6 @@
 
 import os
+import asyncio
 from asyncio import gather, sleep
 
 from aiohttp import ClientSession
@@ -47,21 +48,31 @@ NAME_QUESTIONS = [
 
 
 async def lunaQuery(query: str, user_id: int):
-    query = (
-        query
-        if LANGUAGE == "tr"
-        else (await arq.translate(query, "en")).result.translatedText
-    )
+    try:
+        print(f"ARQ REQUEST | User: {user_id} | Query: {query}")
 
-    resp = (await arq.luna(query, user_id)).result
+        if LANGUAGE != "tr":
+            translated = await arq.translate(query, "en")
+            query = translated.result.translatedText
 
-    return (
-        resp
-        if LANGUAGE == "tr"
-        else (
-            await arq.translate(resp, LANGUAGE)
-        ).result.translatedText
-    )
+        result = await arq.luna(query, user_id)
+
+        print(f"ARQ RAW RESPONSE: {result}")
+
+        resp = result.result
+
+        if not resp:
+            raise ValueError("ARQ boş yanıt döndürdü.")
+
+        if LANGUAGE != "tr":
+            translated = await arq.translate(resp, LANGUAGE)
+            resp = translated.result.translatedText
+
+        return resp
+
+    except Exception as e:
+        print(f"ARQ ERROR: {type(e).__name__}: {e}")
+        raise
 
 
 async def type_and_send(message):
@@ -74,12 +85,20 @@ async def type_and_send(message):
         await message.reply_text("Ben Minnak! 🐾")
         return
 
-    response, _ = await gather(
-        lunaQuery(query, user_id),
-        sleep(2)
-    )
+    try:
+        response, _ = await gather(
+            lunaQuery(query, user_id),
+            sleep(2)
+        )
 
-    await message.reply_text(response)
+        await message.reply_text(response)
+
+    except Exception as e:
+        print(f"MESSAGE ERROR: {type(e).__name__}: {e}")
+
+        await message.reply_text(
+            "Şu anda cevap veremiyorum. Biraz sonra tekrar dene."
+        )
 
 
 @luna.on_message(filters.command("repo"))
@@ -156,5 +175,4 @@ async def main():
 
 
 if __name__ == "__main__":
-    import asyncio
     asyncio.run(main())
